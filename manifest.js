@@ -4,13 +4,22 @@
 // ═══════════════════════════════════════════════════════════
 window.LIBRARY_MANIFEST = [
   {
-    id: "heart-failure",
-    title: "Heart Failure",
-    category: "Cardiovascular",
-    readTime: "8 min",
-    desc: "A clinical syndrome resulting from structural or functional cardiac disorders impairing ventricular filling or ejection.",
-    file: "articles/heart-failure.html",
+    id: "acute-appendicitis",
+    title: "Acute Appendicitis",
+    category: "Surgery / GI",
+    readTime: "4 min",
+    desc: "Acute inflammation of the vermiform appendix — one of the most common causes of acute abdomen.",
+    file: "articles/acute-appendicitis.html",
     date: "2025-01-15"
+  },
+  {
+    id: "anatomy-female-genital-tract",
+    title: "Anatomy of the Female Genital Tract",
+    category: "Anatomy",
+    readTime: "15 min",
+    desc: "A comprehensive guide to the external and internal female reproductive organs, including histology, blood supply, and clinical surgical anatomy.",
+    file: "articles/anatomy-female-genital-tract.html",
+    date: "2026-04-11"
   },
   {
     id: "community-acquired-pneumonia",
@@ -22,12 +31,12 @@ window.LIBRARY_MANIFEST = [
     date: "2025-01-15"
   },
   {
-    id: "acute-appendicitis",
-    title: "Acute Appendicitis",
-    category: "Surgery / GI",
-    readTime: "4 min",
-    desc: "Acute inflammation of the vermiform appendix — one of the most common causes of acute abdomen.",
-    file: "articles/acute-appendicitis.html",
+    id: "heart-failure",
+    title: "Heart Failure",
+    category: "Cardiovascular",
+    readTime: "8 min",
+    desc: "A clinical syndrome resulting from structural or functional cardiac disorders impairing ventricular filling or ejection.",
+    file: "articles/heart-failure.html",
     date: "2025-01-15"
   }
 ];
