@@ -60,6 +60,24 @@ explanation, no commentary. The JSON must conform exactly to this schema:
 
 
 
+\## JSON Escaping Rules (CRITICAL)
+
+Since HTML content is embedded inside JSON strings, you MUST escape ALL double quotes inside HTML attribute values:
+
+- ❌ WRONG: `"content": "<p class="article-p">Text</p>"`
+- ✅ CORRECT: `"content": "<p class=\"article-p\">Text</p>"`
+
+**Every** `class="..."` attribute must use escaped quotes: `class=\"...\"`
+
+This applies to ALL HTML tags with attributes: `<p>`, `<ul>`, `<h3>`, `<div>`, `<table>`, etc.
+
+Also escape any double quotes inside text content: `\"water under the bridge.\"`
+
+**Before outputting, verify:**
+1. No unescaped `"` characters exist inside any string value
+2. The output is valid JSON that can be parsed by `JSON.parse()`
+3. No markdown code fencing (no triple backticks)
+
 \## Field Rules
 
 
@@ -84,7 +102,7 @@ explanation, no commentary. The JSON must conform exactly to this schema:
 
 | `sections\[].title`   | Required. Section heading text.                                       |
 
-| `sections\[].content` | Required. Raw HTML string using ONLY the tags below.                  |
+| `sections\[].content` | Required. Raw HTML string using ONLY the tags below. ALL double quotes MUST be escaped as `\"` |
 
 
 
@@ -98,13 +116,13 @@ You MUST use these exact CSS class names. No other tags or classes are supported
 
 \### Text
 
-\- `<p class="article-p">` — Standard paragraph
+\- `<p class=\"article-p\">` — Standard paragraph
 
 \- `<strong>` — Bold text (use inside paragraphs and list items, not standalone)
 
 \- `<em>` — Italic text
 
-\- `<h3 class="article-h3">` — Sub-heading within a section
+\- `<h3 class=\"article-h3\">` — Sub-heading within a section
 
 
 
@@ -112,7 +130,7 @@ You MUST use these exact CSS class names. No other tags or classes are supported
 
 ```html
 
-<ul class="article-ul">
+<ul class=\"article-ul\">
 
 &#x20; <li><strong>Term:</strong> Explanation text.</li>
 
@@ -132,7 +150,7 @@ Do NOT use `<ol>`. Use `<strong>` for term-label pairs inside `<li>`.
 
 ```html
 
-<div class="clinical-pearl">
+<div class=\"clinical-pearl\">
 
 &#x20; <strong>High-Yield</strong>
 
@@ -148,7 +166,7 @@ Do NOT use `<ol>`. Use `<strong>` for term-label pairs inside `<li>`.
 
 ```html
 
-<div class="warning-box">
+<div class=\"warning-box\">
 
 &#x20; <strong>Clinical Warning</strong>
 
@@ -164,7 +182,7 @@ Do NOT use `<ol>`. Use `<strong>` for term-label pairs inside `<li>`.
 
 ```html
 
-<table class="article-table">
+<table class=\"article-table\">
 
 &#x20; <tr><th>Column 1</th><th>Column 2</th></tr>
 
@@ -307,4 +325,11 @@ No `thead`, `tbody`, `tfoot` — use bare `<tr>` for all rows. First row should 
 \## Final Reminder
 
 Output ONLY the JSON object. No backticks, no explanation, no preamble.
+
+**CRITICAL**: Every double quote (`"`) inside HTML attribute values MUST be escaped with a backslash: `\"`
+
+- Wrong: `class="article-p"`
+- Right: `class=\"article-p\"`
+
+This applies to ALL class attributes in your HTML content.
 
