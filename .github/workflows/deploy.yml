@@ -94,28 +94,30 @@ jobs:
               echo "  -> Already in manifest - checking for updates..."
               sed -i "/id: \"$ARTICLE_ID\"/,/^  },/{/^  },/d; /id: \"$ARTICLE_ID\"/d}" manifest.js
 
-              ENTRY="  {
-    id: \"$ARTICLE_ID\",
-    title: \"$META_TITLE_SAFE\",
-    category: \"$META_CATEGORY\",
-    readTime: \"$META_READTIME\",
-    desc: \"$META_DESC_SAFE\",
-    file: \"articles/$ARTICLE_ID.html\",
-    date: \"$META_DATE\"
-  }"
+              ENTRY=$(printf '%s\n' \
+                "  {" \
+                "    id: \"$ARTICLE_ID\"," \
+                "    title: \"$META_TITLE_SAFE\"," \
+                "    category: \"$META_CATEGORY\"," \
+                "    readTime: \"$META_READTIME\"," \
+                "    desc: \"$META_DESC_SAFE\"," \
+                "    file: \"articles/$ARTICLE_ID.html\"," \
+                "    date: \"$META_DATE\"" \
+                "  }")
               sed -i "/^];/i\\$ENTRY," manifest.js
               UPDATED=$((UPDATED + 1))
             else
               echo "  -> New article - adding to manifest..."
-              ENTRY="  {
-    id: \"$ARTICLE_ID\",
-    title: \"$META_TITLE_SAFE\",
-    category: \"$META_CATEGORY\",
-    readTime: \"$META_READTIME\",
-    desc: \"$META_DESC_SAFE\",
-    file: \"articles/$ARTICLE_ID.html\",
-    date: \"$META_DATE\"
-  }"
+              ENTRY=$(printf '%s\n' \
+                "  {" \
+                "    id: \"$ARTICLE_ID\"," \
+                "    title: \"$META_TITLE_SAFE\"," \
+                "    category: \"$META_CATEGORY\"," \
+                "    readTime: \"$META_READTIME\"," \
+                "    desc: \"$META_DESC_SAFE\"," \
+                "    file: \"articles/$ARTICLE_ID.html\"," \
+                "    date: \"$META_DATE\"" \
+                "  }")
               sed -i "/^];/i\\$ENTRY," manifest.js
               ADDED=$((ADDED + 1))
             fi

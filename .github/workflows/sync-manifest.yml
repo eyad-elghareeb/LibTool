@@ -95,15 +95,16 @@ jobs:
               sed -i "/id: \"$ARTICLE_ID\"/,/^  },/{/^  },/d; /id: \"$ARTICLE_ID\"/d}" manifest.js
 
               # Write the updated entry
-              ENTRY="  {
-    id: \"$ARTICLE_ID\",
-    title: \"$META_TITLE_SAFE\",
-    category: \"$META_CATEGORY\",
-    readTime: \"$META_READTIME\",
-    desc: \"$META_DESC_SAFE\",
-    file: \"articles/$ARTICLE_ID.html\",
-    date: \"$META_DATE\"
-  }"
+              ENTRY=$(printf '%s\n' \
+                "  {" \
+                "    id: \"$ARTICLE_ID\"," \
+                "    title: \"$META_TITLE_SAFE\"," \
+                "    category: \"$META_CATEGORY\"," \
+                "    readTime: \"$META_READTIME\"," \
+                "    desc: \"$META_DESC_SAFE\"," \
+                "    file: \"articles/$ARTICLE_ID.html\"," \
+                "    date: \"$META_DATE\"" \
+                "  }")
 
               # Insert before the closing ];
               sed -i "/^];/i\\$ENTRY," manifest.js
@@ -113,15 +114,16 @@ jobs:
             else
               echo "  -> New article - adding to manifest..."
 
-              ENTRY="  {
-    id: \"$ARTICLE_ID\",
-    title: \"$META_TITLE_SAFE\",
-    category: \"$META_CATEGORY\",
-    readTime: \"$META_READTIME\",
-    desc: \"$META_DESC_SAFE\",
-    file: \"articles/$ARTICLE_ID.html\",
-    date: \"$META_DATE\"
-  }"
+              ENTRY=$(printf '%s\n' \
+                "  {" \
+                "    id: \"$ARTICLE_ID\"," \
+                "    title: \"$META_TITLE_SAFE\"," \
+                "    category: \"$META_CATEGORY\"," \
+                "    readTime: \"$META_READTIME\"," \
+                "    desc: \"$META_DESC_SAFE\"," \
+                "    file: \"articles/$ARTICLE_ID.html\"," \
+                "    date: \"$META_DATE\"" \
+                "  }")
 
               # Insert before the closing ];
               sed -i "/^];/i\\$ENTRY," manifest.js
