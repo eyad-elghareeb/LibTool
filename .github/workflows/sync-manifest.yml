@@ -55,7 +55,12 @@ jobs:
             echo "Processing: $file (id: $ARTICLE_ID)"
 
             # Extract JSON metadata from the article
-            META_RAW=$(grep -oP '(?<=<script type="application/json" id="article-meta">)\s*\K[\s\S]*?(?=</script>)' "$file" 2>/dev/null || true)
+            META_RAW=$(python3 -c "
+import re, sys
+content = open('$file', encoding='utf-8').read()
+m = re.search(r'<script[^>]+id=[\"\']article-meta[\"\'][^>]*>([\s\S]*?)</script>', content)
+if m: print(m.group(1).strip())
+" 2>/dev/null || true)
 
             if [ -z "$META_RAW" ]; then
               echo "  ⚠ No <script id=\"article-meta\"> found - skipping"
