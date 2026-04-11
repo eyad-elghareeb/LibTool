@@ -1,5 +1,5 @@
-# ═══════════════════════════════════════════════════════════
-#  MedLibrary — Auto-Update Manifest
+# ===========================================================
+#  MedLibrary - Auto-Update Manifest
 #
 #  Triggers manually (workflow_dispatch) as a standalone utility.
 #  The deploy.yml workflow handles manifest sync automatically before every deploy.
@@ -8,7 +8,7 @@
 #    1. Add your .html file to articles/
 #    2. Push
 #    3. This workflow does the rest.
-# ═══════════════════════════════════════════════════════════
+# ===========================================================
 
 name: Auto-Update Manifest
 
@@ -58,7 +58,7 @@ jobs:
             META_RAW=$(grep -oP '(?<=<script type="application/json" id="article-meta">)\s*\K[\s\S]*?(?=</script>)' "$file" 2>/dev/null)
 
             if [ -z "$META_RAW" ]; then
-              echo "  ⚠ No <script id=\"article-meta\"> found — skipping"
+              echo "  ⚠ No <script id=\"article-meta\"> found - skipping"
               SKIPPED=$((SKIPPED + 1))
               continue
             fi
@@ -89,7 +89,7 @@ jobs:
 
             # Check if this ID already exists in manifest.js
             if echo "$EXISTING_IDS" | grep -qx "$ARTICLE_ID"; then
-              echo "  → Already in manifest — checking for updates..."
+              echo "  -> Already in manifest - checking for updates..."
 
               # Remove the old entry (from the line with this id)
               sed -i "/id: \"$ARTICLE_ID\"/,/^  },/{/^  },/d; /id: \"$ARTICLE_ID\"/d}" manifest.js
@@ -111,7 +111,7 @@ jobs:
               UPDATED=$((UPDATED + 1))
               CHANGES="${CHANGES}\n  ✏️ Updated: $ARTICLE_ID ($META_TITLE)"
             else
-              echo "  → New article — adding to manifest..."
+              echo "  -> New article - adding to manifest..."
 
               ENTRY="  {
     id: \"$ARTICLE_ID\",
@@ -199,7 +199,7 @@ jobs:
       - name: Summary (no changes)
         if: steps.sync.outputs.has_changes == 'false'
         run: |
-          echo "## Manifest Sync — No Changes" >> $GITHUB_STEP_SUMMARY
+          echo "## Manifest Sync - No Changes" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "All articles in \`articles/\` are already registered in \`manifest.js\`. Nothing to update." >> $GITHUB_STEP_SUMMARY
 

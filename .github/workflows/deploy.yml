@@ -1,5 +1,5 @@
-# ═══════════════════════════════════════════════════════════
-#  MedLibrary — GitHub Pages Deployment
+# ===========================================================
+#  MedLibrary - GitHub Pages Deployment
 #
 #  Triggers on every push to main.
 #  1. Syncs manifest from article HTML files FIRST
@@ -8,9 +8,9 @@
 #  4. Deploys to GitHub Pages
 #
 #  Prerequisites:
-#    1. Go to Settings → Pages → Source: "GitHub Actions"
-#    2. That's it — this workflow handles the rest.
-# ═══════════════════════════════════════════════════════════
+#    1. Go to Settings -> Pages -> Source: "GitHub Actions"
+#    2. That's it - this workflow handles the rest.
+# ===========================================================
 
 name: Deploy MedLibrary
 
@@ -41,7 +41,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── Sync manifest first ─────────────────────────────
+      # -- Sync manifest first -----------------------------
       - name: Sync manifest before deploy
         id: sync
         run: |
@@ -65,7 +65,7 @@ jobs:
             META_RAW=$(grep -oP '(?<=<script type="application/json" id="article-meta">)\s*\K[\s\S]*?(?=</script>)' "$file" 2>/dev/null)
 
             if [ -z "$META_RAW" ]; then
-              echo "  ⚠ No <script id=\"article-meta\"> found — skipping"
+              echo "  ⚠ No <script id=\"article-meta\"> found - skipping"
               SKIPPED=$((SKIPPED + 1))
               continue
             fi
@@ -91,7 +91,7 @@ jobs:
             echo "  Date:     $META_DATE"
 
             if echo "$EXISTING_IDS" | grep -qx "$ARTICLE_ID"; then
-              echo "  → Already in manifest — checking for updates..."
+              echo "  -> Already in manifest - checking for updates..."
               sed -i "/id: \"$ARTICLE_ID\"/,/^  },/{/^  },/d; /id: \"$ARTICLE_ID\"/d}" manifest.js
 
               ENTRY="  {
@@ -106,7 +106,7 @@ jobs:
               sed -i "/^];/i\\$ENTRY," manifest.js
               UPDATED=$((UPDATED + 1))
             else
-              echo "  → New article — adding to manifest..."
+              echo "  -> New article - adding to manifest..."
               ENTRY="  {
     id: \"$ARTICLE_ID\",
     title: \"$META_TITLE_SAFE\",
@@ -161,7 +161,7 @@ jobs:
         run: |
           git pull --rebase origin main
 
-      # ── Validate ─────────────────────────────────────────
+      # -- Validate -----------------------------------------
       - name: Validate manifest consistency
         run: |
           echo "=== Checking manifest.js vs article files ==="
@@ -228,7 +228,7 @@ jobs:
           path: .
           retention-days: 1
 
-  # ── Deploy to GitHub Pages ────────────────────────────────
+  # -- Deploy to GitHub Pages --------------------------------
   deploy:
     name: Deploy to GitHub Pages
     needs: validate
