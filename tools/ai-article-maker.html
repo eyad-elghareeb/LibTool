@@ -83,6 +83,9 @@ textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)
     }
   ]
 }'></textarea>
+      <div style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;line-height:1.4">
+        💡 <strong>Tip:</strong> If AI output has unescaped quotes (like <code style="color:var(--accent)">class="x"</code>), this tool will auto-fix them. For best results, the ARTICLESPEC prompt should tell the AI to escape all quotes as <code style="color:var(--accent)">class=\"x\"</code>.
+      </div>
     </div>
     <div class="actions">
       <button class="btn btn-primary" onclick="generate()">Generate &amp; Download</button>
@@ -121,12 +124,140 @@ function showError(msg){const el=document.getElementById('error-msg');el.textCon
 function showSuccess(msg){const el=document.getElementById('success-msg');el.textContent=msg;el.classList.add('show');document.getElementById('error-msg').classList.remove('show')}
 function hideMessages(){document.getElementById('error-msg').classList.remove('show');document.getElementById('success-msg').classList.remove('show')}
 
+/* ═══ Auto-fix common JSON issues ═══ */
+function tryAutoFixJSON(raw){
+  let fixed = raw;
+  let warnings = [];
+
+  // Step 1: Remove markdown code fencing
+  fixed = fixed.replace(/^```json\s*/i, '').replace(/^```\s*/gm, '').replace(/```\s*$/gm, '');
+  fixed = fixed.trim();
+
+  // Step 2: Try parsing as-is first
+  try { return { data: JSON.parse(fixed), warnings: [] }; } catch(e) {}
+
+  // Step 3: General fix for unescaped quotes in ALL string values
+  fixed = fixJsonQuotes(fixed);
+  if (fixed !== raw) warnings.push('Auto-fixed unescaped quotes');
+
+  // Step 4: Remove trailing commas before } or ]
+  const noTrailingCommas = fixed.replace(/,\s*([}\]])/g, '$1');
+  if (noTrailingCommas !== fixed) {
+    fixed = noTrailingCommas;
+    warnings.push('Removed trailing commas');
+  }
+
+  // Step 5: Try parsing again
+  try { return { data: JSON.parse(fixed), warnings }; } catch(e2) {
+    return { error: e2.message };
+  }
+}
+
+function fixJsonQuotes(str) {
+  // Iteratively find and fix unescaped quotes
+  // Firefox reports "line X column Y", Chrome reports "position N"
+  let result = str;
+  let maxIterations = 2000;
+  
+  for (let iter = 0; iter < maxIterations; iter++) {
+    try {
+      JSON.parse(result);
+      return result;
+    } catch (e) {
+      const msg = e.message;
+      let fixPos = -1;
+      
+      // Try Firefox format: "line X column Y"
+      const lineCol = msg.match(/line (\d+) column (\d+)/);
+      if (lineCol) {
+        const lines = result.split('\n');
+        const lineNum = parseInt(lineCol[1]);
+        const colNum = parseInt(lineCol[2]);
+        if (lineNum <= lines.length) {
+          // Find the quote at or before the error column
+          const lineIdx = lineNum - 1;
+          let col = Math.min(colNum - 1, lines[lineIdx].length - 1);
+          // Walk back to find the quote
+          while (col >= 0 && lines[lineIdx][col] !== '"') col--;
+          if (col >= 0) {
+            // Calculate absolute position
+            fixPos = lines.slice(0, lineIdx).join('\n').length + (lineIdx > 0 ? 1 : 0) + col;
+          }
+        }
+      }
+      
+      // Try Chrome format: "position N"  
+      if (fixPos === -1) {
+        const posMatch = msg.match(/position (\d+)/);
+        if (posMatch) {
+          fixPos = parseInt(posMatch[1]) - 1;
+        }
+      }
+      
+      if (fixPos === -1 || fixPos >= result.length) return result;
+      
+      // Check if this position is actually a quote
+      if (result[fixPos] !== '"') {
+        // Walk back to find the quote
+        let p = fixPos;
+        while (p >= 0 && result[p] !== '"') p--;
+        if (p >= 0) fixPos = p;
+        else return result;
+      }
+      
+      // Check if it's already escaped
+      if (fixPos > 0 && result[fixPos - 1] === '\\') return result;
+      
+      // Escape this quote
+      result = result.substring(0, fixPos) + '\\"' + result.substring(fixPos + 1);
+    }
+  }
+  
+  return result;
+}
+
 /* ═══ Parse & Validate ═══ */
 function parseInput(){
   const raw = document.getElementById('json-input').value.trim();
   if(!raw){showError('Please paste JSON content.');return null}
-  let data;
-  try{data=JSON.parse(raw)}catch(e){showError('Invalid JSON: '+e.message);return null}
+
+  // Debug: show first 200 chars
+  console.log('Input starts with:', raw.substring(0, 200));
+
+  let result;
+  try {
+    result = tryAutoFixJSON(raw);
+  } catch(e) {
+    showError('Error parsing JSON: '+e.message);
+    return null;
+  }
+
+  if(result.error){
+    // Show helpful context
+    const errLine = result.error.match(/line (\d+) column (\d+)/);
+    let context = '';
+    if (errLine) {
+      const lines = raw.split('\n');
+      const lineNum = parseInt(errLine[1]);
+      const colNum = parseInt(errLine[2]);
+      if (lineNum <= lines.length) {
+        const line = lines[lineNum - 1];
+        const start = Math.max(0, colNum - 40);
+        const snippet = line.substring(start, start + 80);
+        context = '\n\nContext (line ' + lineNum + '):\n...' + snippet + '\n';
+      }
+    }
+    showError('Invalid JSON: '+result.error + context + '\nTip: Make sure all quotes inside HTML content are escaped. Use \" instead of "');
+    return null;
+  }
+
+  if(result.warnings && result.warnings.length > 0){
+    showSuccess('JSON auto-fixed: ' + result.warnings.join(', '));
+  } else {
+    hideMessages();
+  }
+
+  const data = result.data;
   if(!data.id||!data.title||!data.sections||!Array.isArray(data.sections)||!data.sections.length){
     showError('Missing required fields: id, title, sections (non-empty array).');return null}
   for(let i=0;i<data.sections.length;i++){
@@ -135,7 +266,12 @@ function parseInput(){
     s.id = s.id.replace(/[^a-zA-Z0-9_-]/g,'-').toLowerCase();
   }
   data.id = data.id.replace(/[^a-zA-Z0-9_-]/g,'-').toLowerCase();
-  hideMessages();
+
+  if(result.warnings && result.warnings.length > 0){
+    showSuccess('JSON auto-fixed: ' + result.warnings.join(', '));
+  } else {
+    hideMessages();
+  }
   return data;
 }
 
