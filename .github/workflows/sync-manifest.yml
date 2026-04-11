@@ -14,10 +14,8 @@
 name: Auto-Update Manifest
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'articles/**.html'
+  # Push trigger removed — deploy workflow now handles sync before deploy.
+  # This workflow is only available for manual trigger (workflow_dispatch).
   workflow_dispatch:  # Manual trigger to sync all articles
 
 permissions:

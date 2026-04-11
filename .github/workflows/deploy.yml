@@ -2,8 +2,10 @@
 #  MedLibrary — GitHub Pages Deployment
 #
 #  Triggers on every push to main.
-#  Auto-bumps the service worker cache version so users
-#  always get the latest articles when you add new ones.
+#  1. Syncs manifest from article HTML files FIRST
+#  2. Validates manifest consistency
+#  3. Bumps service worker cache version
+#  4. Deploys to GitHub Pages
 #
 #  Prerequisites:
 #    1. Go to Settings → Pages → Source: "GitHub Actions"
@@ -37,7 +39,130 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
+      # ── Sync manifest first ─────────────────────────────
+      - name: Sync manifest before deploy
+        id: sync
+        run: |
+          echo "=== Scanning articles/ for new/updated articles ==="
+
+          # Extract existing IDs from manifest.js
+          EXISTING_IDS=$(grep -oP 'id:\s*"\K[^"]+' manifest.js | sort)
+          echo "Existing manifest entries: $(echo "$EXISTING_IDS" | wc -l)"
+
+          ADDED=0
+          UPDATED=0
+          SKIPPED=0
+
+          for file in articles/*.html; do
+            [ -f "$file" ] || continue
+
+            ARTICLE_ID=$(basename "$file" .html)
+            echo ""
+            echo "Processing: $file (id: $ARTICLE_ID)"
+
+            META_RAW=$(grep -oP '(?<=<script type="application/json" id="article-meta">)\s*\K[\s\S]*?(?=</script>)' "$file" 2>/dev/null)
+
+            if [ -z "$META_RAW" ]; then
+              echo "  ⚠ No <script id=\"article-meta\"> found — skipping"
+              SKIPPED=$((SKIPPED + 1))
+              continue
+            fi
+
+            META=$(echo "$META_RAW" | tr -d '\n\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+            META_TITLE=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('title',''))" 2>/dev/null)
+            META_CATEGORY=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('category','General'))" 2>/dev/null)
+            META_READTIME=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('readTime','5 min'))" 2>/dev/null)
+            META_DESC=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('desc','') or d.get('description',''))" 2>/dev/null)
+            META_DATE=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('date',''))" 2>/dev/null)
+
+            META_DESC_SAFE=$(echo "$META_DESC" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/ /g')
+            META_TITLE_SAFE=$(echo "$META_TITLE" | sed 's/"/\\"/g')
+
+            if [ -z "$META_DATE" ]; then
+              META_DATE=$(date +%Y-%m-%d)
+            fi
+
+            echo "  Title:    $META_TITLE"
+            echo "  Category: $META_CATEGORY"
+            echo "  ReadTime: $META_READTIME"
+            echo "  Date:     $META_DATE"
+
+            if echo "$EXISTING_IDS" | grep -qx "$ARTICLE_ID"; then
+              echo "  → Already in manifest — checking for updates..."
+              sed -i "/id: \"$ARTICLE_ID\"/,/^  },/{/^  },/d; /id: \"$ARTICLE_ID\"/d}" manifest.js
+
+              ENTRY="  {
+    id: \"$ARTICLE_ID\",
+    title: \"$META_TITLE_SAFE\",
+    category: \"$META_CATEGORY\",
+    readTime: \"$META_READTIME\",
+    desc: \"$META_DESC_SAFE\",
+    file: \"articles/$ARTICLE_ID.html\",
+    date: \"$META_DATE\"
+  }"
+              sed -i "/^];/i\\$ENTRY," manifest.js
+              UPDATED=$((UPDATED + 1))
+            else
+              echo "  → New article — adding to manifest..."
+              ENTRY="  {
+    id: \"$ARTICLE_ID\",
+    title: \"$META_TITLE_SAFE\",
+    category: \"$META_CATEGORY\",
+    readTime: \"$META_READTIME\",
+    desc: \"$META_DESC_SAFE\",
+    file: \"articles/$ARTICLE_ID.html\",
+    date: \"$META_DATE\"
+  }"
+              sed -i "/^];/i\\$ENTRY," manifest.js
+              ADDED=$((ADDED + 1))
+            fi
+          done
+
+          # Clean up trailing commas
+          python3 -c "
+          import re
+          with open('manifest.js', 'r') as f:
+              content = f.read()
+          content = re.sub(r',(\s*\n\s*\])', r'\1', content)
+          with open('manifest.js', 'w') as f:
+              f.write(content)
+          "
+
+          echo ""
+          echo "=== Summary ==="
+          echo "Added:   $ADDED"
+          echo "Updated: $UPDATED"
+          echo "Skipped: $SKIPPED"
+
+          echo "added=$ADDED" >> $GITHUB_OUTPUT
+          echo "updated=$UPDATED" >> $GITHUB_OUTPUT
+          echo "has_changes=$([ $((ADDED + UPDATED)) -gt 0 ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+
+      - name: Commit and push manifest
+        if: steps.sync.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.js
+          CHANGES_COUNT=$(git diff --cached --stat manifest.js | grep manifest.js | awk '{print $1}')
+          if [ -n "$CHANGES_COUNT" ]; then
+            git commit -m "chore: auto-sync manifest.js (${{ steps.sync.outputs.added }} added, ${{ steps.sync.outputs.updated }} updated)"
+            git push
+            echo "Pushed manifest update"
+          else
+            echo "No actual changes to commit"
+          fi
+
+      - name: Pull latest after sync push
+        if: steps.sync.outputs.has_changes == 'true'
+        run: |
+          git pull --rebase origin main
+
+      # ── Validate ─────────────────────────────────────────
       - name: Validate manifest consistency
         run: |
           echo "=== Checking manifest.js vs article files ==="
