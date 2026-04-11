@@ -30,7 +30,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # ── Build & Validate ──────────────────────────────────────
   validate:
     name: Validate & Prepare
     runs-on: ubuntu-latest

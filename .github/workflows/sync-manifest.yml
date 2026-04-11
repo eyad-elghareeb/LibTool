@@ -13,10 +13,9 @@
 
 name: Auto-Update Manifest
 
+# Trigger: manual only (deploy workflow handles sync before deploy)
 on:
-  # Push trigger removed — deploy workflow now handles sync before deploy.
-  # This workflow is only available for manual trigger (workflow_dispatch).
-  workflow_dispatch:  # Manual trigger to sync all articles
+  workflow_dispatch:
 
 permissions:
   contents: write
