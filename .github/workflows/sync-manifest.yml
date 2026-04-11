@@ -55,7 +55,7 @@ jobs:
             echo "Processing: $file (id: $ARTICLE_ID)"
 
             # Extract JSON metadata from the article
-            META_RAW=$(grep -oP '(?<=<script type="application/json" id="article-meta">)\s*\K[\s\S]*?(?=</script>)' "$file" 2>/dev/null)
+            META_RAW=$(grep -oP '(?<=<script type="application/json" id="article-meta">)\s*\K[\s\S]*?(?=</script>)' "$file" 2>/dev/null || true)
 
             if [ -z "$META_RAW" ]; then
               echo "  ⚠ No <script id=\"article-meta\"> found - skipping"
@@ -67,11 +67,11 @@ jobs:
             META=$(echo "$META_RAW" | tr -d '\n\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
             # Parse fields from JSON
-            META_TITLE=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('title',''))" 2>/dev/null)
-            META_CATEGORY=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('category','General'))" 2>/dev/null)
-            META_READTIME=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('readTime','5 min'))" 2>/dev/null)
-            META_DESC=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('desc','') or d.get('description',''))" 2>/dev/null)
-            META_DATE=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('date',''))" 2>/dev/null)
+            META_TITLE=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('title',''))" 2>/dev/null || true)
+            META_CATEGORY=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('category','General'))" 2>/dev/null || true)
+            META_READTIME=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('readTime','5 min'))" 2>/dev/null || true)
+            META_DESC=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('desc','') or d.get('description',''))" 2>/dev/null || true)
+            META_DATE=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('date',''))" 2>/dev/null || true)
 
             # Escape double quotes and newlines for JS string
             META_DESC_SAFE=$(echo "$META_DESC" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/ /g')
