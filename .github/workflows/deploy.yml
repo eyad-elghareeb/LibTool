@@ -1,0 +1,144 @@
+# ═══════════════════════════════════════════════════════════
+#  MedLibrary — GitHub Pages Deployment
+#
+#  Triggers on every push to main.
+#  Auto-bumps the service worker cache version so users
+#  always get the latest articles when you add new ones.
+#
+#  Prerequisites:
+#    1. Go to Settings → Pages → Source: "GitHub Actions"
+#    2. That's it — this workflow handles the rest.
+# ═══════════════════════════════════════════════════════════
+
+name: Deploy MedLibrary
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual trigger from Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one deployment at a time
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # ── Build & Validate ──────────────────────────────────────
+  validate:
+    name: Validate & Prepare
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate manifest consistency
+        run: |
+          echo "=== Checking manifest.js vs article files ==="
+
+          # Extract article IDs from manifest.js
+          grep -oP 'id:\s*"\K[^"]+' manifest.js | sort > /tmp/manifest-ids.txt
+
+          # Extract article filenames from articles/ directory
+          ls articles/*.html 2>/dev/null | xargs -I{} basename {} .html | sort > /tmp/article-files.txt
+
+          # Warn about manifest entries without matching article files
+          MISSING_FILES=$(comm -23 /tmp/manifest-ids.txt /tmp/article-files.txt)
+          if [ -n "$MISSING_FILES" ]; then
+            echo "::warning::These manifest entries have no matching HTML file in articles/:"
+            echo "$MISSING_FILES"
+          fi
+
+          # Warn about article files not listed in manifest
+          MISSING_ENTRIES=$(comm -13 /tmp/manifest-ids.txt /tmp/article-files.txt)
+          if [ -n "$MISSING_ENTRIES" ]; then
+            echo "::warning::These article files have no entry in manifest.js:"
+            echo "$MISSING_ENTRIES"
+            echo ""
+            echo "To fix: copy the manifest entry from the Article Generator tool"
+            echo "and paste it into manifest.js, then push again."
+          fi
+
+          # Summary
+          MANIFEST_COUNT=$(wc -l < /tmp/manifest-ids.txt)
+          FILE_COUNT=$(wc -l < /tmp/article-files.txt)
+          echo ""
+          echo "Manifest entries: $MANIFEST_COUNT"
+          echo "Article files:    $FILE_COUNT"
+          echo "Validation complete."
+
+      - name: Check service worker exists
+        id: sw-check
+        run: |
+          if [ -f "sw.js" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "::warning::sw.js not found. PWA will not have offline support."
+          fi
+
+      - name: Bump service worker cache version
+        id: version
+        if: steps.sw-check.outputs.found == 'true'
+        run: |
+          # Use short commit SHA as the cache version
+          VERSION="v$(echo ${{ github.sha }} | cut -c1-8)"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          # Replace the placeholder in sw.js
+          sed -i "s/{{CACHE_VERSION}}/${VERSION}/" sw.js
+
+          echo "Cache version set to: $VERSION"
+          echo "This ensures all users receive updated content."
+
+      - name: Upload prepared artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: .
+          retention-days: 1
+
+  # ── Deploy to GitHub Pages ────────────────────────────────
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: validate
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download site artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: site
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ needs.validate.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Users will receive the updated site on their next visit." >> $GITHUB_STEP_SUMMARY
+          echo "The service worker will auto-update in the background." >> $GITHUB_STEP_SUMMARY

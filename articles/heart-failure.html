@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heart Failure - MedLibrary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../lib/article-style.css">
+<script type="application/json" id="article-meta">
+{"id":"heart-failure","title":"Heart Failure","category":"Cardiovascular","readTime":"8 min","desc":"A clinical syndrome resulting from structural or functional cardiac disorders impairing ventricular filling or ejection.","date":"2025-01-15"}
+</script>
+</head>
+<body>
+<!-- Reading Progress Bar -->
+<div class="reading-progress"></div>
+
+<!-- Copy Toast -->
+<div class="copy-toast"></div>
+
+<!-- Back to Top -->
+<button class="back-to-top" title="Back to top">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
+
+<!-- Mobile TOC Overlay -->
+<div class="toc-overlay"></div>
+
+<!-- Mobile TOC Toggle -->
+<button class="toc-mobile-toggle">
+  <span class="toc-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </span>
+  Contents
+</button>
+
+<div class="article-page">
+  <div class="article-topbar">
+    <button class="back-btn" onclick="goHome()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Library
+    </button>
+    <div class="article-topbar-info">
+      <span class="article-cat-badge">Cardiovascular</span>
+      <span class="article-read-badge">⏱ 8 min</span>
+    </div>
+    <div class="topbar-actions">
+      <div class="font-controls">
+        <button class="font-btn" data-scale="0.85" title="Smaller text (A-)">A-</button>
+        <button class="font-btn" data-scale="1" title="Default text (A)">A</button>
+        <button class="font-btn" data-scale="1.15" title="Larger text (A+)">A+</button>
+      </div>
+      <button class="icon-btn bookmark-btn" onclick="toggleBookmark()" title="Bookmark this article">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <button class="icon-btn" onclick="exportPDF()" title="Export as PDF">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </button>
+      <button class="icon-btn theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme (T)">☀</button>
+    </div>
+  </div>
+  <div class="article-body">
+    <nav class="toc-sidebar">
+      <h3 class="toc-heading">Contents</h3>
+      <div class="toc-list" id="toc-list"></div>
+    </nav>
+    <main class="article-content" id="article-content">
+      <div class="article-content-inner" id="pdf-target">
+        <div class="article-header-block">
+          <h1 class="article-h1">Heart Failure</h1>
+          <p class="article-desc">A clinical syndrome resulting from structural or functional cardiac disorders impairing ventricular filling or ejection.</p>
+        </div>
+
+        <section class="article-section" id="overview" style="animation-delay:0.05s">
+          <button class="section-link-btn" onclick="copySectionLink('overview')" title="Copy section link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <h2 class="article-h2">Overview &amp; Definition</h2>
+          <p class="article-p">Heart failure (HF) is a complex clinical syndrome resulting from structural or functional impairment of ventricular filling or ejection of blood. It is a progressive condition characterized by dyspnea, fatigue, and fluid retention. HF represents the common final pathway of many cardiovascular diseases and carries substantial morbidity and mortality.</p>
+          <div class="clinical-pearl">
+            <strong>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              High-Yield
+            </strong>
+            HF is not a single disease but a syndrome. The hallmark is the heart's inability to pump blood at a rate commensurate with the requirements of metabolizing tissues, or doing so only from elevated filling pressures.
+          </div>
+        </section>
+
+        <section class="article-section" id="classification" style="animation-delay:0.1s">
+          <button class="section-link-btn" onclick="copySectionLink('classification')" title="Copy section link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <h2 class="article-h2">Classification</h2>
+          <p class="article-p">Heart failure is commonly classified based on left ventricular ejection fraction (LVEF), which guides treatment decisions and prognosis:</p>
+          <ul class="article-ul">
+            <li><strong>HFrEF (Reduced EF):</strong> LVEF ≤ 40%. Also known as systolic heart failure. Most evidence-based therapies target this subtype.</li>
+            <li><strong>HFmrEF (Mildly Reduced EF):</strong> LVEF 41–49%. A relatively newer classification; evidence for treatment is evolving.</li>
+            <li><strong>HFpEF (Preserved EF):</strong> LVEF ≥ 50%. Also known as diastolic heart failure. Evidence of structural heart disease or diastolic dysfunction is required. Treatment is largely symptom-based.</li>
+          </ul>
+          <h3 class="article-h3">NYHA Functional Classification</h3>
+          <div class="article-table-wrap">
+            <table class="article-table">
+              <tr><th>Class</th><th>Symptoms</th></tr>
+              <tr><td>I</td><td>No limitation of physical activity. Ordinary activity does not cause symptoms.</td></tr>
+              <tr><td>II</td><td>Slight limitation. Comfortable at rest; ordinary activity causes fatigue, palpitation, or dyspnea.</td></tr>
+              <tr><td>III</td><td>Marked limitation. Comfortable at rest; less than ordinary activity causes symptoms.</td></tr>
+              <tr><td>IV</td><td>Inability to carry on any physical activity without discomfort. Symptoms present at rest.</td></tr>
+            </table>
+          </div>
+        </section>
+
+        <section class="article-section" id="pathophysiology" style="animation-delay:0.15s">
+          <button class="section-link-btn" onclick="copySectionLink('pathophysiology')" title="Copy section link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <h2 class="article-h2">Pathophysiology</h2>
+          <p class="article-p">The initial event is usually a decline in pumping capacity (e.g., myocardial infarction, valvular disease, hypertension). This triggers compensatory neurohormonal mechanisms that initially maintain cardiac output but ultimately become maladaptive, driving progressive myocardial remodeling and worsening function.</p>
+          <ul class="article-ul">
+            <li><strong>Sympathetic Nervous System (SNS):</strong> Increases heart rate and contractility acutely, but chronically leads to myocyte apoptosis, beta-receptor down-regulation, and increased arrhythmia risk.</li>
+            <li><strong>Renin-Angiotensin-Aldosterone System (RAAS):</strong> Causes vasoconstriction and sodium/water retention, increasing preload and afterload. Promotes cardiac fibrosis and hypertrophy.</li>
+            <li><strong>Counter-regulatory system:</strong> Natriuretic peptides (BNP, NT-proBNP) are released in response to ventricular stretch, promoting vasodilation and natriuresis — these serve as both biomarkers and therapeutic targets.</li>
+          </ul>
+          <div class="warning-box">
+            <strong>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Clinical Warning
+            </strong>
+            Chronic activation of RAAS and SNS is fundamentally maladaptive and drives progressive myocardial remodeling. Pharmacological blockade of these systems forms the cornerstone of HFrEF therapy. The transition from compensation to decompensation is a key clinical concept.
+          </div>
+        </section>
+
+        <section class="article-section" id="management" style="animation-delay:0.2s">
+          <button class="section-link-btn" onclick="copySectionLink('management')" title="Copy section link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <h2 class="article-h2">Management (HFrEF)</h2>
+          <p class="article-p">The goals of therapy are to reduce mortality, prevent hospitalizations, and improve functional status and quality of life. The foundation is Guideline-Directed Medical Therapy (GDMT), which has been shown to significantly improve survival in clinical trials.</p>
+          <h3 class="article-h3">The Four Pillars of GDMT</h3>
+          <ul class="article-ul">
+            <li><strong>ARNI (Sacubitril/Valsartan) or ACEi/ARB:</strong> First-line. ARNI (Entresto) is preferred over ACEi/ARB for eligible patients. Reduces mortality and hospitalizations.</li>
+            <li><strong>Beta-Blockers (Carvedilol, Metoprolol succinate, Bisoprolol):</strong> Reverses ventricular remodeling. Start low, go slow. Avoid in acute decompensation.</li>
+            <li><strong>MRAs (Spironolactone, Eplerenone):</strong> Aldosterone antagonism reduces fibrosis and mortality. Monitor potassium and renal function.</li>
+            <li><strong>SGLT2 Inhibitors (Dapagliflozin, Empagliflozin):</strong> Originally diabetes drugs, now foundational for HF regardless of diabetes status. Reduce hospitalizations and mortality.</li>
+          </ul>
+          <p class="article-p">Diuretics (e.g., Furosemide) are used strictly for symptom relief (fluid overload) but do not confer a mortality benefit. They remain important for managing congestion.</p>
+          <div class="clinical-pearl">
+            <strong>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              High-Yield
+            </strong>
+            All four pillars should be initiated simultaneously (or as rapidly as tolerated) rather than sequentially. Delaying uptitration of each class one after the other is an outdated approach. The key principle is "start low, go slow, but start all four."
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="../lib/article-script.js"></script>
+</body>
+</html>

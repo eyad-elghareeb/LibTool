@@ -1,0 +1,219 @@
+# ═══════════════════════════════════════════════════════════
+#  MedLibrary — Auto-Update Manifest
+#
+#  Triggers when article HTML files are added/changed in articles/.
+#  Reads the <script type="application/json" id="article-meta">
+#  from each article HTML, then auto-updates manifest.js.
+#
+#  You only need to:
+#    1. Add your .html file to articles/
+#    2. Push
+#    3. This workflow does the rest.
+# ═══════════════════════════════════════════════════════════
+
+name: Auto-Update Manifest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'articles/**.html'
+  workflow_dispatch:  # Manual trigger to sync all articles
+
+permissions:
+  contents: write
+
+jobs:
+  sync-manifest:
+    name: Sync manifest.js with articles
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract article metadata and update manifest
+        id: sync
+        run: |
+          echo "=== Scanning articles/ for new/updated articles ==="
+
+          # Extract existing IDs from manifest.js
+          EXISTING_IDS=$(grep -oP 'id:\s*"\K[^"]+' manifest.js | sort)
+          echo "Existing manifest entries: $(echo "$EXISTING_IDS" | wc -l)"
+
+          # Track changes
+          ADDED=0
+          UPDATED=0
+          SKIPPED=0
+          CHANGES=""
+
+          # Process each article HTML file
+          for file in articles/*.html; do
+            [ -f "$file" ] || continue
+
+            # Extract the article-id (filename without extension)
+            ARTICLE_ID=$(basename "$file" .html)
+            echo ""
+            echo "Processing: $file (id: $ARTICLE_ID)"
+
+            # Extract JSON metadata from the article
+            META_RAW=$(grep -oP '(?<=<script type="application/json" id="article-meta">)\s*\K[\s\S]*?(?=</script>)' "$file" 2>/dev/null)
+
+            if [ -z "$META_RAW" ]; then
+              echo "  ⚠ No <script id=\"article-meta\"> found — skipping"
+              SKIPPED=$((SKIPPED + 1))
+              continue
+            fi
+
+            # Clean up the JSON (remove whitespace/newlines for parsing)
+            META=$(echo "$META_RAW" | tr -d '\n\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+            # Parse fields from JSON
+            META_TITLE=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('title',''))" 2>/dev/null)
+            META_CATEGORY=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('category','General'))" 2>/dev/null)
+            META_READTIME=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('readTime','5 min'))" 2>/dev/null)
+            META_DESC=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('desc','') or d.get('description',''))" 2>/dev/null)
+            META_DATE=$(echo "$META" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('date',''))" 2>/dev/null)
+
+            # Escape double quotes and newlines for JS string
+            META_DESC_SAFE=$(echo "$META_DESC" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/ /g')
+            META_TITLE_SAFE=$(echo "$META_TITLE" | sed 's/"/\\"/g')
+
+            # Use today's date if not set
+            if [ -z "$META_DATE" ]; then
+              META_DATE=$(date +%Y-%m-%d)
+            fi
+
+            echo "  Title:    $META_TITLE"
+            echo "  Category: $META_CATEGORY"
+            echo "  ReadTime: $META_READTIME"
+            echo "  Date:     $META_DATE"
+
+            # Check if this ID already exists in manifest.js
+            if echo "$EXISTING_IDS" | grep -qx "$ARTICLE_ID"; then
+              echo "  → Already in manifest — checking for updates..."
+
+              # Remove the old entry (from the line with this id)
+              sed -i "/id: \"$ARTICLE_ID\"/,/^  },/{/^  },/d; /id: \"$ARTICLE_ID\"/d}" manifest.js
+
+              # Write the updated entry
+              ENTRY="  {
+    id: \"$ARTICLE_ID\",
+    title: \"$META_TITLE_SAFE\",
+    category: \"$META_CATEGORY\",
+    readTime: \"$META_READTIME\",
+    desc: \"$META_DESC_SAFE\",
+    file: \"articles/$ARTICLE_ID.html\",
+    date: \"$META_DATE\"
+  }"
+
+              # Insert before the closing ];
+              sed -i "/^];/i\\$ENTRY," manifest.js
+
+              UPDATED=$((UPDATED + 1))
+              CHANGES="${CHANGES}\n  ✏️ Updated: $ARTICLE_ID ($META_TITLE)"
+            else
+              echo "  → New article — adding to manifest..."
+
+              ENTRY="  {
+    id: \"$ARTICLE_ID\",
+    title: \"$META_TITLE_SAFE\",
+    category: \"$META_CATEGORY\",
+    readTime: \"$META_READTIME\",
+    desc: \"$META_DESC_SAFE\",
+    file: \"articles/$ARTICLE_ID.html\",
+    date: \"$META_DATE\"
+  }"
+
+              # Insert before the closing ];
+              sed -i "/^];/i\\$ENTRY," manifest.js
+
+              ADDED=$((ADDED + 1))
+              CHANGES="${CHANGES}\n  ✅ Added: $ARTICLE_ID ($META_TITLE)"
+            fi
+          done
+
+          # Clean up trailing comma before ];
+          # Replace ",\n];" with "\n];"
+          python3 -c "
+          import re
+          with open('manifest.js', 'r') as f:
+              content = f.read()
+          # Fix any double commas or trailing comma before ];
+          content = re.sub(r',(\s*\n\s*\])', r'\1', content)
+          # Ensure single entry has comma, multiple entries separated correctly
+          content = re.sub(r'(\})\s*\n(\s*\})', r'\1,\n\2', content)
+          with open('manifest.js', 'w') as f:
+              f.write(content)
+          "
+
+          echo ""
+          echo "=== Summary ==="
+          echo "Added:   $ADDED"
+          echo "Updated: $UPDATED"
+          echo "Skipped: $SKIPPED"
+          echo -e "Changes:$CHANGES"
+
+          # Set outputs
+          echo "added=$ADDED" >> $GITHUB_OUTPUT
+          echo "updated=$UPDATED" >> $GITHUB_OUTPUT
+          echo "has_changes=$([ $((ADDED + UPDATED)) -gt 0 ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+
+      - name: Verify manifest.js syntax
+        if: steps.sync.outputs.has_changes == 'true'
+        run: |
+          echo "=== Verifying manifest.js is valid JS ==="
+          node -e "
+            const fs = require('fs');
+            const content = fs.readFileSync('manifest.js', 'utf8');
+            // Remove the window.LIBRARY_MANIFEST = assignment and trailing semicolon
+            const jsonStr = content.replace(/window\.LIBRARY_MANIFEST\s*=\s*/, '').replace(/;\s*$/, '');
+            try {
+              const data = JSON.parse(jsonStr);
+              console.log('Valid! Found', data.length, 'articles:');
+              data.forEach(a => console.log('  -', a.id, '|', a.title, '|', a.category));
+            } catch (e) {
+              console.error('INVALID manifest.js:', e.message);
+              process.exit(1);
+            }
+          "
+
+      - name: Commit and push manifest update
+        if: steps.sync.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add manifest.js
+          CHANGES_COUNT=$(git diff --cached --stat manifest.js | grep manifest.js | awk '{print $1}')
+          if [ -n "$CHANGES_COUNT" ]; then
+            ADDED=${{ steps.sync.outputs.added }}
+            UPDATED=${{ steps.sync.outputs.updated }}
+            COMMIT_MSG="chore: auto-sync manifest.js (${ADDED} added, ${UPDATED} updated)"
+            
+            git commit -m "$COMMIT_MSG"
+            git push
+            echo "Pushed manifest update: $COMMIT_MSG"
+          else
+            echo "No actual changes to commit (content identical)"
+          fi
+
+      - name: Summary (no changes)
+        if: steps.sync.outputs.has_changes == 'false'
+        run: |
+          echo "## Manifest Sync — No Changes" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All articles in \`articles/\` are already registered in \`manifest.js\`. Nothing to update." >> $GITHUB_STEP_SUMMARY
+
+      - name: Summary (with changes)
+        if: steps.sync.outputs.has_changes == 'true'
+        run: |
+          echo "## Manifest Sync Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Added:** ${{ steps.sync.outputs.added }} articles" >> $GITHUB_STEP_SUMMARY
+          echo "- **Updated:** ${{ steps.sync.outputs.updated }} articles" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** pushed to main" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The deploy workflow will now run automatically." >> $GITHUB_STEP_SUMMARY

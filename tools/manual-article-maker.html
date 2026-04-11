@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual Article Editor — MedLibrary</title>
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MedLibrary">
+<link rel="manifest" href="../manifest.json">
+<link rel="apple-touch-icon" href="../icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--surface3:#222a36;--border:#30363d;--text:#e6edf3;--text-muted:#8b949e;--accent:#f0a500;--accent-dim:rgba(240,165,0,.12);--accent-glow:rgba(240,165,0,.25);--correct:#2ea043;--correct-bg:rgba(46,160,67,.12);--wrong:#da3633;--wrong-bg:rgba(218,54,51,.12);--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4);--transition:.2s ease}
+[data-theme="light"]{--bg:#f3f0eb;--surface:#fff;--surface2:#f8f6f1;--surface3:#eee9e0;--border:#d0ccc5;--text:#1c1917;--text-muted:#78716c;--accent:#c27803;--accent-dim:rgba(194,120,3,.1);--accent-glow:rgba(194,120,3,.18);--shadow:0 4px 24px rgba(0,0,0,.08)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;transition:background var(--transition),color var(--transition);min-height:100vh}
+button{cursor:pointer;font-family:inherit;border:none;outline:none;background:transparent}
+input,textarea,select{font-family:inherit}
+.topbar{display:flex;align-items:center;gap:.75rem;padding:.65rem 1.5rem;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.topbar-logo{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;flex:1}
+.topbar-logo span{color:var(--accent)}
+.icon-btn{width:36px;height:36px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:all var(--transition)}
+.icon-btn:hover{color:var(--text);border-color:var(--accent)}
+.layout{display:flex;height:calc(100vh - 53px);overflow:hidden}
+.panel{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border)}
+.panel:last-child{border-right:none}
+.panel-head{padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);font-weight:700;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.panel-body{flex:1;overflow-y:auto;padding:1rem}
+.panel-body::-webkit-scrollbar{width:5px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.form-group{margin-bottom:.85rem}
+.form-label{display:block;font-size:.8rem;font-weight:600;color:var(--text-muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.04em}
+.form-input{width:100%;padding:.6rem .8rem;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-size:.9rem;outline:none;transition:border-color var(--transition),box-shadow var(--transition)}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+textarea.form-input{min-height:120px;resize:vertical;font-family:'Courier New',monospace;font-size:.82rem;line-height:1.5}
+.section-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:.75rem;position:relative;transition:border-color var(--transition)}
+.section-block:hover{border-color:rgba(240,165,0,.3)}
+.section-block-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.section-block-head span{font-size:.82rem;font-weight:600;color:var(--accent)}
+.btn-sm{padding:.3rem .6rem;border-radius:6px;font-size:.78rem;font-weight:600;transition:all var(--transition);display:inline-flex;align-items:center;gap:.3rem}
+.btn-danger{color:var(--wrong);background:var(--wrong-bg);border:1px solid transparent}
+.btn-danger:hover{border-color:var(--wrong);transform:translateY(-1px)}
+.btn-accent{background:var(--accent-dim);color:var(--accent);border:1px solid transparent}
+.btn-accent:hover{border-color:var(--accent);transform:translateY(-1px)}
+.actions{padding:1rem;border-top:1px solid var(--border);display:flex;gap:.5rem;flex-wrap:wrap;flex-shrink:0}
+.btn{padding:.65rem 1.25rem;border-radius:8px;font-size:.88rem;font-weight:600;transition:all var(--transition);display:inline-flex;align-items:center;gap:.4rem}
+.btn-primary{background:var(--accent);color:#000;border:1px solid var(--accent)}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 16px var(--accent-glow)}
+.btn-primary:active{transform:translateY(0)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.success-msg{background:var(--correct-bg);color:var(--correct);padding:.6rem 1rem;border-radius:8px;border:1px solid var(--correct);font-size:.82rem;margin-bottom:.75rem;display:none;animation:fadeIn .3s ease}
+.success-msg.show{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.manifest-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;font-family:'Courier New',monospace;font-size:.78rem;line-height:1.5;color:var(--text-muted);margin-top:.75rem;word-break:break-all;white-space:pre-wrap;display:none}
+.manifest-box.show{display:block}
+.copy-btn{font-size:.75rem;padding:.3rem .6rem;border-radius:4px;background:var(--accent-dim);color:var(--accent);border:1px solid transparent;transition:all var(--transition);margin-top:.5rem}
+.copy-btn:hover{border-color:var(--accent)}
+.cheatsheet{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.78rem;line-height:1.7;color:var(--text-muted)}
+.cheatsheet summary{font-weight:600;color:var(--text);cursor:pointer;font-size:.82rem;transition:color var(--transition)}
+.cheatsheet summary:hover{color:var(--accent)}
+.cheatsheet code{background:var(--surface3);padding:.1rem .3rem;border-radius:3px;font-size:.76rem;color:var(--accent)}
+.preview-frame{border:none;width:100%;height:100%;background:var(--bg)}
+@media(max-width:768px){.layout{flex-direction:column}.panel{min-height:45vh;border-right:none;border-bottom:1px solid var(--border)}.panel:last-child{border-bottom:none}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="../index.html" style="display:flex;align-items:center;gap:.4rem;color:var(--text-muted);font-size:.85rem;margin-right:.5rem;transition:color var(--transition)" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-muted)'">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  </a>
+  <div class="topbar-logo">✏️ Manual Article <span>Editor</span></div>
+  <button class="icon-btn theme-toggle-btn" onclick="toggleTheme()">☀</button>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <div class="panel-head">
+      Editor
+      <span style="font-weight:400;text-transform:none;letter-spacing:0" id="section-count">0 sections</span>
+    </div>
+    <div class="panel-body">
+      <div class="success-msg" id="success-msg"></div>
+
+      <div class="form-group">
+        <label class="form-label">Article ID (filename)</label>
+        <input class="form-input" id="f-id" placeholder="e.g. diabetes-mellitus">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input class="form-input" id="f-title" placeholder="e.g. Diabetes Mellitus">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <input class="form-input" id="f-category" placeholder="e.g. Endocrinology">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Read Time</label>
+        <input class="form-input" id="f-readtime" placeholder="e.g. 7 min" value="5 min">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input class="form-input" id="f-desc" placeholder="Brief one-liner...">
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:.75rem 0 .5rem">
+        <span class="form-label" style="margin:0">Sections</span>
+        <button class="btn-sm btn-accent" onclick="addSection()">+ Add Section</button>
+      </div>
+
+      <div id="sections-container"></div>
+
+      <details class="cheatsheet">
+        <summary>HTML Cheat Sheet for Section Content</summary>
+        <p style="margin-top:.4rem">
+          <code>&lt;p class="article-p"&gt;Text&lt;/p&gt;</code> — Paragraph<br>
+          <code>&lt;h3 class="article-h3"&gt;Sub-heading&lt;/h3&gt;</code> — Sub-heading<br>
+          <code>&lt;ul class="article-ul"&gt;&lt;li&gt;Item&lt;/li&gt;&lt;/ul&gt;</code> — Bullet list<br>
+          <code>&lt;strong&gt;Bold&lt;/strong&gt;</code> within list items
+        </p>
+        <p style="margin-top:.4rem">
+          <code>&lt;div class="clinical-pearl"&gt;&lt;strong&gt;High-Yield&lt;/strong&gt;Text&lt;/div&gt;</code><br>
+          <code>&lt;div class="warning-box"&gt;&lt;strong&gt;Warning&lt;/strong&gt;Text&lt;/div&gt;</code>
+        </p>
+        <p style="margin-top:.4rem">
+          <code>&lt;div class="article-table-wrap"&gt;&lt;table class="article-table"&gt;...&lt;/table&gt;&lt;/div&gt;</code>
+        </p>
+      </details>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="exportArticle()">Export HTML</button>
+      <button class="btn btn-secondary" onclick="previewArticle()">Preview</button>
+    </div>
+    <div class="manifest-box" id="manifest-box"></div>
+    <div style="padding:0 1rem 1rem;display:none" id="manifest-actions">
+      <button class="copy-btn" onclick="copyManifest()">Copy manifest entry</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">Live Preview</div>
+    <div class="panel-body" style="padding:0">
+      <iframe class="preview-frame" id="preview-frame"></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ Theme ═══ */
+function applyTheme(){const t=localStorage.getItem('medlib-theme')||'dark';document.documentElement.setAttribute('data-theme',t);document.querySelectorAll('.theme-toggle-btn').forEach(b=>b.textContent=t==='dark'?'☀':'☾')}
+function toggleTheme(){const c=document.documentElement.getAttribute('data-theme'),n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('medlib-theme',n);applyTheme()}
+applyTheme();
+
+/* ── Service Worker ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('../sw.js').catch(() => {});
+  });
+}
+
+let sectionCounter = 0;
+let lastManifestEntry = '';
+
+function addSection(title='', id='', content='') {
+  sectionCounter++;
+  const idx = sectionCounter;
+  const container = document.getElementById('sections-container');
+  const block = document.createElement('div');
+  block.className = 'section-block';
+  block.dataset.idx = idx;
+  block.innerHTML = `
+    <div class="section-block-head">
+      <span>Section ${idx}</span>
+      <button class="btn-sm btn-danger" onclick="removeSection(this)">Remove</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Section ID</label>
+      <input class="form-input sec-id" placeholder="e.g. pathophysiology" value="${escAttr(id)}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Section Title</label>
+      <input class="form-input sec-title" placeholder="e.g. Pathophysiology" value="${escAttr(title)}">
+    </div>
+    <div class="form-group" style="margin-bottom:0">
+      <label class="form-label">Content (HTML)</label>
+      <textarea class="form-input sec-content" placeholder="<p class='article-p'>...</p>">${escAttr(content)}</textarea>
+    </div>`;
+  container.appendChild(block);
+  updateSectionCount();
+}
+
+function removeSection(btn) {
+  const block = btn.closest('.section-block');
+  block.style.opacity = '0';
+  block.style.transform = 'translateY(-8px)';
+  setTimeout(() => { block.remove(); updateSectionCount(); }, 200);
+}
+
+function updateSectionCount() {
+  const n = document.querySelectorAll('.section-block').length;
+  document.getElementById('section-count').textContent = n + ' section' + (n !== 1 ? 's' : '');
+}
+
+function escAttr(s){return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+/* ═══ Gather Data ═══ */
+function gatherData() {
+  const id = document.getElementById('f-id').value.trim().replace(/[^a-zA-Z0-9_-]/g,'-').toLowerCase();
+  const title = document.getElementById('f-title').value.trim();
+  const category = document.getElementById('f-category').value.trim();
+  const readTime = document.getElementById('f-readtime').value.trim() || '5 min';
+  const desc = document.getElementById('f-desc').value.trim();
+
+  if(!id || !title) { alert('Article ID and Title are required.'); return null; }
+
+  const blocks = document.querySelectorAll('.section-block');
+  const sections = [];
+  let valid = true;
+  blocks.forEach(b => {
+    const sid = b.querySelector('.sec-id').value.trim().replace(/[^a-zA-Z0-9_-]/g,'-').toLowerCase();
+    const stitle = b.querySelector('.sec-title').value.trim();
+    const scontent = b.querySelector('.sec-content').value;
+    if(!sid || !stitle) { valid = false; return; }
+    sections.push({ id: sid, title: stitle, content: scontent });
+  });
+  if(!valid || !sections.length) { alert('Each section needs an ID and Title, and you need at least one section.'); return null; }
+
+  return { id, title, category: category || 'General', readTime, description: desc, sections };
+}
+
+/* ═══ Build HTML ═══ */
+function buildArticleHTML(data) {
+  const sectionsHTML = data.sections.map((s, i) => `
+        <section class="article-section" id="${s.id}" style="animation-delay:${(i * 0.05 + 0.05)}s">
+          <button class="section-link-btn" onclick="copySectionLink('${s.id}')" title="Copy section link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <h2 class="article-h2">${escHTML(s.title)}</h2>
+          ${s.content}
+        </section>`).join('\n');
+  return `<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escHTML(data.title)} - MedLibrary</title>
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MedLibrary">
+<link rel="manifest" href="../manifest.json">
+<link rel="apple-touch-icon" href="../icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../lib/article-style.css">
+<script type="application/json" id="article-meta">
+ ${JSON.stringify(data)}
+<\/script>
+</head>
+<body>
+<div class="reading-progress"></div>
+<div class="copy-toast"></div>
+<button class="back-to-top" title="Back to top">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
+<div class="toc-overlay"></div>
+<button class="toc-mobile-toggle">
+  <span class="toc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span> Contents
+</button>
+<div class="article-page">
+  <div class="article-topbar">
+    <button class="back-btn" onclick="goHome()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Library
+    </button>
+    <div class="article-topbar-info">
+      <span class="article-cat-badge">${escHTML(data.category)}</span>
+      <span class="article-read-badge">⏱ ${escHTML(data.readTime)}</span>
+    </div>
+    <div class="topbar-actions">
+      <div class="font-controls">
+        <button class="font-btn" data-scale="0.85" title="Smaller text (A-)">A-</button>
+        <button class="font-btn" data-scale="1" title="Default text (A)">A</button>
+        <button class="font-btn" data-scale="1.15" title="Larger text (A+)">A+</button>
+      </div>
+      <button class="icon-btn bookmark-btn" onclick="toggleBookmark()" title="Bookmark this article">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <button class="icon-btn" onclick="exportPDF()" title="Export as PDF">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </button>
+      <button class="icon-btn theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme (T)">☀</button>
+    </div>
+  </div>
+  <div class="article-body">
+    <nav class="toc-sidebar"><h3 class="toc-heading">Contents</h3><div class="toc-list" id="toc-list"></div></nav>
+    <main class="article-content" id="article-content">
+      <div class="article-content-inner" id="pdf-target">
+        <div class="article-header-block">
+          <h1 class="article-h1">${escHTML(data.title)}</h1>
+          <p class="article-desc">${escHTML(data.description||'')}</p>
+        </div>
+ ${sectionsHTML}
+      </div>
+    </main>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
+<script src="../lib/article-script.js"><\/script>
+</body>
+</html>`;
+}
+
+function escHTML(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function buildManifestEntry(data){
+  const today = new Date().toISOString().slice(0,10);
+  return `  {
+    id: "${data.id}",
+    title: "${data.title.replace(/"/g,'\\"')}",
+    category: "${data.category.replace(/"/g,'\\"')}",
+    readTime: "${data.readTime}",
+    desc: "${(data.description||'').replace(/"/g,'\\"').replace(/\n/g,' ')}",
+    file: "articles/${data.id}.html",
+    date: "${today}"
+  }`;
+}
+
+/* ═══ Export ═══ */
+function exportArticle(){
+  const data = gatherData();
+  if(!data) return;
+  const html = buildArticleHTML(data);
+  lastManifestEntry = buildManifestEntry(data);
+
+  const blob = new Blob([html],{type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = data.id + '.html'; a.click();
+  URL.revokeObjectURL(url);
+
+  document.getElementById('manifest-box').textContent = lastManifestEntry;
+  document.getElementById('manifest-box').classList.add('show');
+  document.getElementById('manifest-actions').style.display = 'block';
+  const msg = document.getElementById('success-msg');
+  msg.textContent = 'Downloaded! Copy the manifest entry below into manifest.js';
+  msg.classList.add('show');
+}
+
+/* ═══ Preview ═══ */
+function previewArticle(){
+  const data = gatherData();
+  if(!data) return;
+  const html = buildArticleHTML(data);
+  lastManifestEntry = buildManifestEntry(data);
+  document.getElementById('preview-frame').srcdoc = html;
+}
+
+/* ═══ Copy Manifest ═══ */
+function copyManifest(){
+  if(!lastManifestEntry) return;
+  navigator.clipboard.writeText(lastManifestEntry).then(()=>{
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(()=>{btn.textContent='Copy manifest entry'},1500);
+  });
+}
+
+/* ═══ Add one default section on load ═══ */
+addSection('Overview', 'overview', '');
+</script>
+</body>
+</html>

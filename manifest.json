@@ -1,0 +1,30 @@
+{
+  "name": "MedLibrary — Clinical Knowledge Base",
+  "short_name": "MedLibrary",
+  "description": "Evidence-based medical articles, guidelines, and high-yield concepts — organized and searchable.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#0d1117",
+  "background_color": "#0d1117",
+  "orientation": "any",
+  "categories": ["education", "medical", "health"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

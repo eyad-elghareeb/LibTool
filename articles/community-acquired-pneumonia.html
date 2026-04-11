@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community-Acquired Pneumonia - MedLibrary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../lib/article-style.css">
+<script type="application/json" id="article-meta">
+{"id":"community-acquired-pneumonia","title":"Community-Acquired Pneumonia","category":"Infectious Disease","readTime":"6 min","desc":"An acute infection of the pulmonary parenchyma acquired outside of a healthcare setting.","date":"2025-01-15"}
+</script>
+</head>
+<body>
+<div class="reading-progress"></div>
+<div class="copy-toast"></div>
+<button class="back-to-top" title="Back to top">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
+<div class="toc-overlay"></div>
+<button class="toc-mobile-toggle">
+  <span class="toc-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </span>
+  Contents
+</button>
+
+<div class="article-page">
+  <div class="article-topbar">
+    <button class="back-btn" onclick="goHome()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Library
+    </button>
+    <div class="article-topbar-info">
+      <span class="article-cat-badge">Infectious Disease</span>
+      <span class="article-read-badge">⏱ 6 min</span>
+    </div>
+    <div class="topbar-actions">
+      <div class="font-controls">
+        <button class="font-btn" data-scale="0.85" title="Smaller text (A-)">A-</button>
+        <button class="font-btn" data-scale="1" title="Default text (A)">A</button>
+        <button class="font-btn" data-scale="1.15" title="Larger text (A+)">A+</button>
+      </div>
+      <button class="icon-btn bookmark-btn" onclick="toggleBookmark()" title="Bookmark this article">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <button class="icon-btn" onclick="exportPDF()" title="Export as PDF">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </button>
+      <button class="icon-btn theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme (T)">☀</button>
+    </div>
+  </div>
+  <div class="article-body">
+    <nav class="toc-sidebar">
+      <h3 class="toc-heading">Contents</h3>
+      <div class="toc-list" id="toc-list"></div>
+    </nav>
+    <main class="article-content" id="article-content">
+      <div class="article-content-inner" id="pdf-target">
+        <div class="article-header-block">
+          <h1 class="article-h1">Community-Acquired Pneumonia</h1>
+          <p class="article-desc">An acute infection of the pulmonary parenchyma acquired outside of a healthcare setting.</p>
+        </div>
+
+        <section class="article-section" id="cap-overview" style="animation-delay:0.05s">
+          <button class="section-link-btn" onclick="copySectionLink('cap-overview')" title="Copy section link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <h2 class="article-h2">Overview</h2>
+          <p class="article-p">Community-acquired pneumonia (CAP) is a common, potentially lethal infection of the lung parenchyma. It presents with fever, cough, sputum production, pleuritic chest pain, and dyspnea. CAP is a leading cause of hospitalization and infectious disease mortality worldwide, particularly affecting the elderly, immunocompromised, and those with comorbid conditions.</p>
+          <div class="clinical-pearl">
+            <strong>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              High-Yield
+            </strong>
+            <em>Streptococcus pneumoniae</em> remains the most common typical bacterial cause of CAP globally. Always consider atypical pathogens (<em>Mycoplasma, Legionella, Chlamydia</em>) in the differential, especially in younger patients or those with specific risk factors.
+          </div>
+        </section>
+
+        <section class="article-section" id="cap-diagnosis" style="animation-delay:0.1s">
+          <button class="section-link-btn" onclick="copySectionLink('cap-diagnosis')" title="Copy section link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <h2 class="article-h2">Diagnosis</h2>
+          <p class="article-p">Diagnosis requires clinical features (fever, cough, dyspnea) plus an infiltrate on chest imaging. The workup should aim to identify the causative organism when possible and assess severity:</p>
+          <ul class="article-ul">
+            <li><strong>Chest X-ray:</strong> Lobar consolidation suggests typical bacterial (e.g., <em>S. pneumoniae</em>); interstitial infiltrates suggest atypical (e.g., <em>Mycoplasma</em>).</li>
+            <li><strong>Labs:</strong> CBC (leukocytosis with left shift), BMP (electrolytes, renal function), LFTs, lactate, procalcitonin (useful for guiding antibiotic duration).</li>
+            <li><strong>Sputum Gram stain &amp; culture:</strong> Recommended in hospitalized patients, especially if severe or not responding to initial therapy.</li>
+            <li><strong>Urinary antigens:</strong> <em>S. pneumoniae</em> and <em>Legionella</em> antigen testing should be ordered in severe cases or when these pathogens are suspected.</li>
+            <li><strong>Blood cultures:</strong> Should be drawn before antibiotics in severe CAP requiring ICU admission; positive in only ~5–10% of cases.</li>
+          </ul>
+        </section>
+
+        <section class="article-section" id="cap-severity" style="animation-delay:0.15s">
+          <button class="section-link-btn" onclick="copySectionLink('cap-severity')" title="Copy section link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <h2 class="article-h2">Severity Assessment</h2>
+          <p class="article-p">Site-of-care decisions (outpatient vs. inpatient vs. ICU) rely on validated scoring systems that estimate mortality risk:</p>
+          <div class="article-table-wrap">
+            <table class="article-table">
+              <tr><th>Tool</th><th>Use</th><th>Key Parameters</th></tr>
+              <tr><td>CURB-65</td><td>Quick bedside assessment</td><td>Confusion, Uremia (BUN >19), RR ≥ 30, BP low (SBP <90 or DBP ≤60), Age ≥ 65</td></tr>
+              <tr><td>PSI / PORT</td><td>Mortality estimate</td><td>20 variables, 5 risk classes (I–V). More comprehensive but less practical at bedside.</td></tr>
+            </table>
+          </div>
+          <div class="warning-box">
+            <strong>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Clinical Warning
+            </strong>
+            CURB-65 score ≥ 3 mandates hospital admission. Score ≥ 5 warrants ICU consideration. Do not rely on a single score alone — always integrate clinical judgment, patient comorbidities, social factors, and overall clinical appearance.
+          </div>
+        </section>
+
+        <section class="article-section" id="cap-treatment" style="animation-delay:0.2s">
+          <button class="section-link-btn" onclick="copySectionLink('cap-treatment')" title="Copy section link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <h2 class="article-h2">Treatment</h2>
+          <p class="article-p">Empiric antibiotic therapy should be initiated promptly, guided by severity and local resistance patterns. Treatment is stratified by site of care:</p>
+          <h3 class="article-h3">Outpatient (Healthy, No Comorbidities)</h3>
+          <ul class="article-ul">
+            <li>Amoxicillin 1g TID <strong>or</strong> Doxycycline 100mg BID <strong>or</strong> Macrolide (Azithromycin 500mg day 1, then 250mg daily × 4 days)</li>
+          </ul>
+          <h3 class="article-h3">Outpatient (With Comorbidities)</h3>
+          <ul class="article-ul">
+            <li>Amoxicillin/clavulanate 875/125mg BID <strong>+</strong> Macrolide <strong>or</strong> Respiratory fluoroquinolone (Levofloxacin 750mg daily)</li>
+          </ul>
+          <h3 class="article-h3">Inpatient (Non-ICU)</h3>
+          <ul class="article-ul">
+            <li>Beta-lactam (Ceftriaxone 1g IV daily, Cefotaxime) <strong>+</strong> Macrolide <strong>or</strong> Respiratory fluoroquinolone monotherapy</li>
+          </ul>
+          <div class="clinical-pearl">
+            <strong>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              High-Yield
+            </strong>
+            Antibiotics should be administered within 4 hours of hospital arrival for CAP. Delaying antibiotics beyond this window is associated with increased mortality. Procalcitonin-guided therapy can help shorten antibiotic duration in mild-to-moderate cases.
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="../lib/article-script.js"></script>
+</body>
+</html>
