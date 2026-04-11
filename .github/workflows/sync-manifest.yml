@@ -1,9 +1,8 @@
 # ═══════════════════════════════════════════════════════════
 #  MedLibrary — Auto-Update Manifest
 #
-#  Triggers when article HTML files are added/changed in articles/.
-#  Reads the <script type="application/json" id="article-meta">
-#  from each article HTML, then auto-updates manifest.js.
+#  Triggers manually (workflow_dispatch) as a standalone utility.
+#  The deploy.yml workflow handles manifest sync automatically before every deploy.
 #
 #  You only need to:
 #    1. Add your .html file to articles/
