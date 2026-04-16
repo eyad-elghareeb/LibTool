@@ -19,7 +19,7 @@ window.LIBRARY_MANIFEST = [
     readTime: "15 min",
     desc: "A comprehensive guide to the external and internal female reproductive organs, including histology, blood supply, and clinical surgical anatomy.",
     file: "articles/anatomy-female-genital-tract.html",
-    date: "2026-04-11"
+    date: "2026-04-16"
   },
   {
     id: "community-acquired-pneumonia",
@@ -29,6 +29,15 @@ window.LIBRARY_MANIFEST = [
     desc: "An acute infection of the pulmonary parenchyma acquired outside of a healthcare setting.",
     file: "articles/community-acquired-pneumonia.html",
     date: "2025-01-15"
+  },
+  {
+    id: "gynecology-clinical-summary",
+    title: "Manual of Gynecology: Comprehensive Clinical Summary",
+    category: "Gynecology",
+    readTime: "35 min",
+    desc: "High-yield gynecology concepts covering anatomy, menstrual disorders, PCOS, AUB, fibroids, endometriosis, infertility, and contraception with diagnostic flowcharts and treatment algorithms.",
+    file: "articles/gynecology-clinical-summary.html",
+    date: "2026-04-16"
   },
   {
     id: "heart-failure",
