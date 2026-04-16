@@ -22,15 +22,6 @@ window.LIBRARY_MANIFEST = [
     date: "2026-04-11"
   },
   {
-  id: "gynecology-clinical-summary",
-  title: "Manual of Gynecology: Comprehensive Clinical Summary",
-  category: "Gynecology",
-  readTime: "35 min",
-  desc: "High-yield gynecology concepts covering anatomy, menstrual disorders, PCOS, AUB, fibroids, endometriosis, infertility, and contraception with diagnostic flowcharts and treatment algorithms.",
-  file: "articles/gynecology-clinical-summary.html",
-  date: "2025-04-17"
-  },
-  {
     id: "community-acquired-pneumonia",
     title: "Community-Acquired Pneumonia",
     category: "Infectious Disease",
