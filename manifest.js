@@ -29,7 +29,7 @@ window.LIBRARY_MANIFEST = [
   desc: "High-yield gynecology concepts covering anatomy, menstrual disorders, PCOS, AUB, fibroids, endometriosis, infertility, and contraception with diagnostic flowcharts and treatment algorithms.",
   file: "articles/gynecology-clinical-summary.html",
   date: "2025-04-17"
-},
+  },
   {
     id: "community-acquired-pneumonia",
     title: "Community-Acquired Pneumonia",
